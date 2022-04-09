@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+tr {
+  border-bottom: 1px solid whitesmoke;
+}
+
+th, td {
+  padding: 15px; 
+}
+
+tr:hover {
+  background-color: darkgoldenrod;
+}

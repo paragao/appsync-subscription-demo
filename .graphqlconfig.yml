@@ -1,0 +1,15 @@
+projects:
+  DigioDemo:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: us-east-1
+        apiId: 2trr4ekohrf7naap2xunw6gj34
+        maxDepth: 2
