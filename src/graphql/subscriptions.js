@@ -2,20 +2,8 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateDigioDemo = /* GraphQL */ `
-  subscription OnCreateDigioDemo(
-    $id: ID
-    $user: String
-    $status: String
-    $createdAt: AWSDateTime
-    $originIP: AWSIPAddress
-  ) {
-    onCreateDigioDemo(
-      id: $id
-      user: $user
-      status: $status
-      createdAt: $createdAt
-      originIP: $originIP
-    ) {
+  subscription OnCreateDigioDemo {
+    onCreateDigioDemo {
       id
       user
       status
@@ -36,20 +24,8 @@ export const onUpdateDigioDemo = /* GraphQL */ `
   }
 `;
 export const onDeleteDigioDemo = /* GraphQL */ `
-  subscription OnDeleteDigioDemo(
-    $id: ID
-    $user: String
-    $status: String
-    $createdAt: AWSDateTime
-    $originIP: AWSIPAddress
-  ) {
-    onDeleteDigioDemo(
-      id: $id
-      user: $user
-      status: $status
-      createdAt: $createdAt
-      originIP: $originIP
-    ) {
+  subscription OnDeleteDigioDemo {
+    onDeleteDigioDemo {
       id
       user
       status

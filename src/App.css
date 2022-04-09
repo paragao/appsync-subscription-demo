@@ -48,3 +48,24 @@ th, td {
 tr:hover {
   background-color: darkgoldenrod;
 }
+
+button, input, label {
+  padding: 5px;
+  margin: 5px;
+}
+
+.content {
+  display: flexbox;
+}
+
+.inner {
+  display: inline-flex;
+}
+
+.left {
+  align-self: flex-start;
+}
+
+.right {
+  align-self: flex-end;
+}

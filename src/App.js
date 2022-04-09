@@ -12,14 +12,16 @@ Amplify.configure(awsconfig)
 
 function App() {
 
-  const [username, setUsername] = useState('paragao');
+  const [username, setUsername] = useState('');
   const [uuid, setUuid] = useState('');
-  const [ip, setIp] = useState();
+  const [ip, setIp] = useState('192.168.0.1');
+  const [status, setStatus] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [dateTime, setDateTime] = useState('');
 
   useEffect(() => {
     //getIp();
-    subs();
+    subscription.unsubscribe();
   });
 
   const getIp = () => {
@@ -35,56 +37,66 @@ function App() {
       })
   }
 
+  const getDateTime = () => {
+    const date = new Date().toISOString()
+    setDateTime(date)
+  }
+
   const updateDetails = { 
-    id: 'Af2tmbH9nFkUOG43pK0XPGIvldp79XYB', 
-    user: 'paragao',
-    status: "NEW"
+    id: uuid, 
+    user: username,
+    status: status
   }
 
   const createDetails = {
     id: uuid,
-    status: "ANDAMENTO",
+    status: status,
     user: username,
-    originIp: ip
+    originIp: ip,
+    createdAt: dateTime
   }
 
   const getDetails = {
-    id: "",
-    user: ""
+    id: uuid,
+    user: username
   }
 
-  const subs = () => {
-    API.graphql(graphqlOperation(subscriptions.onUpdateDigioDemo)).subscribe({
-      next: ({ provider, value }) => {
-        console.log('subs data: ', value);
-        //update the array with the new values
-        //use .slice to copy the state array, then change it, and then update using setState
+  const subscription = API.graphql(graphqlOperation(subscriptions.onUpdateDigioDemo)).subscribe({
+    next: ({ provider, value }) => {
+      console.log('subs data: ', value);
+      //update the array with the new values
+      const newTransaction = value.data.onUpdateDigioDemo
 
-        //get updated information
-        const newTransaction = value.data.onUpdateDigioDemo
+      //copy the state array - transactions
+      const newTransactions = transactions.slice();
 
-        //copy the state array - transactions
-        const newTransactions = transactions.slice();
-
-        //change the value 
-        const index = newTransactions.findIndex(el => el.id === 'Af2tmbH9nFkUOG43pK0XPGIvldp79XYB')
-        console.log('index: ', index)
-
+      //find the index where the item is located 
+      const index = newTransactions.findIndex(el => el.id === uuid)
+      
+      if (index != -1) {
+        //update the value
+        newTransactions[index].status = newTransaction.status
+        
         //finally update the state with the new information
         setTransactions(newTransactions)
-      },
-      error: error => console.warn('subs error: ', error)
-    });
-  };
+      } else {
+        console.error('couldn\'t find item in the array', index)
+      }
+    },
+    error: error => console.warn('subs error: ', error)
+  });
 
   const updateTransaction = async () => {
     await API.graphql(graphqlOperation(mutations.updateDigioDemo, { input: updateDetails }))
       .then((data) => {
         console.log('updated: ', data)
       });
+
+    subscription.unsubscribe();
   }
 
   const createTransaction = async () => {
+    getDateTime();
     await API.graphql(graphqlOperation(mutations.createDigioDemo, { input: createDetails }))
       .then((data) => {
         console.log('created: ', data)
@@ -103,22 +115,33 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div>
-          <div>Unique ID: {uuid}</div>
-          <div><button onClick={() => setUuid(uuidv4())}>Generate UUID</button></div>
-          <div>Username: {username}</div>
-          <div><input type="text" onChange={(e) => setUsername(e.target.value)} label="set username" /></div>
-          <div>Origin IP: {ip}</div>
-          <div><button onClick={() => setIp(getIp())}>Get IP</button></div>
-          <div></div>
+        <div className="content">
+          <div className="left">
+            <label>Unique ID:</label>
+            <input type="text" onChange={(e) => setUuid(e.target.value)} />
+            <button onClick={() => setUuid(uuidv4())}>Generate UUID</button>
+          </div>
+          <div className="left">
+            <label>Username: </label>
+            <input type="text" onChange={(e) => setUsername(e.target.value)} label="setUsername" />
+          </div>
+          <div className="left">
+            <label>Status:</label>
+            <input type="text" onChange={(e) => setStatus(e.target.value)} label="setStatus" />
+          </div>
+          <div className="right">
+            <label>UUID: {uuid}</label>
+            <label>Username: {username}</label>
+            <label>Status: {status}</label>
+          </div>
         </div>
-        <div>
+        <div className='content'>
           <button onClick={createTransaction}>
             Click me to CREATE a transaction
-          </button><br />
+          </button>
           <button onClick={updateTransaction}>
             Click me to UPDATE the transaction
-          </button><br />
+          </button>
           <button onClick={listTransactions}>
             Click me to LIST all transactions
           </button>
