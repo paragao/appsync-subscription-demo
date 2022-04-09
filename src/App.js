@@ -57,8 +57,20 @@ function App() {
     API.graphql(graphqlOperation(subscriptions.onUpdateDigioDemo)).subscribe({
       next: ({ provider, value }) => {
         console.log('subs data: ', value);
+        //update the array with the new values
+        //use .slice to copy the state array, then change it, and then update using setState
+
+        //get updated information
         const newTransaction = value.data.onUpdateDigioDemo
-        const newTransactions = [...transactions, newTransaction]
+
+        //copy the state array - transactions
+        const newTransactions = transactions.slice();
+
+        //change the value 
+        const index = newTransactions.findIndex(el => el.id === 'Af2tmbH9nFkUOG43pK0XPGIvldp79XYB')
+        console.log('index: ', index)
+
+        //finally update the state with the new information
         setTransactions(newTransactions)
       },
       error: error => console.warn('subs error: ', error)
