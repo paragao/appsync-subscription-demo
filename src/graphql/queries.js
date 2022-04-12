@@ -1,30 +1,42 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getDigioDemo = /* GraphQL */ `
-  query GetDigioDemo($id: ID!, $user: String!) {
-    getDigioDemo(id: $id, user: $user) {
+export const getTransaction = /* GraphQL */ `
+  query GetTransaction($id: ID!, $user: String!) {
+    getTransaction(id: $id, user: $user) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-export const listDigioDemos = /* GraphQL */ `
-  query ListDigioDemos(
-    $filter: TableDigioDemoFilterInput
+export const listTransactions = /* GraphQL */ `
+  query ListTransactions(
+    $id: ID
+    $user: ModelStringKeyConditionInput
+    $filter: ModelTransactionFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
-    listDigioDemos(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listTransactions(
+      id: $id
+      user: $user
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
       items {
         id
-        user
-        status
-        createdAt
         originIP
+        status
+        user
+        createdAt
+        updatedAt
       }
       nextToken
     }

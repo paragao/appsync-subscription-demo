@@ -1,54 +1,63 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateDigioDemo = /* GraphQL */ `
-  subscription OnCreateDigioDemo {
-    onCreateDigioDemo {
+export const onUpdateSpecificTransaction = /* GraphQL */ `
+  subscription OnUpdateSpecificTransaction($id: ID!) {
+    onUpdateSpecificTransaction(id: $id) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-export const onUpdateDigioDemo = /* GraphQL */ `
-  subscription OnUpdateDigioDemo {
-    onUpdateDigioDemo {
+export const onUpdateTransactionByUser = /* GraphQL */ `
+  subscription OnUpdateTransactionByUser($user: String!) {
+    onUpdateTransactionByUser(user: $user) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-/*When you want to create a specific subscription based on a parameter*/ 
-export const onSpecificUpdate = /* GraphQL */ `
-  subscription OnSpecificUpdate (
-    $id: String!,
-    $user: String!
-  ) {
-    onSpecificUpdate (
-      id: $id,
-      user: $user
-    ) {
+export const onCreateTransaction = /* GraphQL */ `
+  subscription OnCreateTransaction {
+    onCreateTransaction {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-export const onDeleteDigioDemo = /* GraphQL */ `
-  subscription OnDeleteDigioDemo {
-    onDeleteDigioDemo {
+export const onUpdateTransaction = /* GraphQL */ `
+  subscription OnUpdateTransaction {
+    onUpdateTransaction {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTransaction = /* GraphQL */ `
+  subscription OnDeleteTransaction {
+    onDeleteTransaction {
+      id
+      originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;

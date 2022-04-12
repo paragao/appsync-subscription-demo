@@ -1,36 +1,48 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createDigioDemo = /* GraphQL */ `
-  mutation CreateDigioDemo($input: CreateDigioDemoInput!) {
-    createDigioDemo(input: $input) {
+export const createTransaction = /* GraphQL */ `
+  mutation CreateTransaction(
+    $input: CreateTransactionInput!
+    $condition: ModelTransactionConditionInput
+  ) {
+    createTransaction(input: $input, condition: $condition) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-export const updateDigioDemo = /* GraphQL */ `
-  mutation UpdateDigioDemo($input: UpdateDigioDemoInput!) {
-    updateDigioDemo(input: $input) {
+export const updateTransaction = /* GraphQL */ `
+  mutation UpdateTransaction(
+    $input: UpdateTransactionInput!
+    $condition: ModelTransactionConditionInput
+  ) {
+    updateTransaction(input: $input, condition: $condition) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
-export const deleteDigioDemo = /* GraphQL */ `
-  mutation DeleteDigioDemo($input: DeleteDigioDemoInput!) {
-    deleteDigioDemo(input: $input) {
+export const deleteTransaction = /* GraphQL */ `
+  mutation DeleteTransaction(
+    $input: DeleteTransactionInput!
+    $condition: ModelTransactionConditionInput
+  ) {
+    deleteTransaction(input: $input, condition: $condition) {
       id
-      user
-      status
-      createdAt
       originIP
+      status
+      user
+      createdAt
+      updatedAt
     }
   }
 `;
