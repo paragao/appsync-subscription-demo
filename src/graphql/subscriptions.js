@@ -23,6 +23,24 @@ export const onUpdateDigioDemo = /* GraphQL */ `
     }
   }
 `;
+/*When you want to create a specific subscription based on a parameter*/ 
+export const onSpecificUpdate = /* GraphQL */ `
+  subscription OnSpecificUpdate (
+    $id: String!,
+    $user: String!
+  ) {
+    onSpecificUpdate (
+      id: $id,
+      user: $user
+    ) {
+      id
+      user
+      status
+      createdAt
+      originIP
+    }
+  }
+`;
 export const onDeleteDigioDemo = /* GraphQL */ `
   subscription OnDeleteDigioDemo {
     onDeleteDigioDemo {

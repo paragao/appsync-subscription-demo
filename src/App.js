@@ -39,26 +39,7 @@ function App() {
 
   const getDateTime = () => {
     const date = new Date().toISOString()
-    setDateTime(date)
-  }
-
-  const updateDetails = { 
-    id: uuid, 
-    user: username,
-    status: status
-  }
-
-  const createDetails = {
-    id: uuid,
-    status: status,
-    user: username,
-    originIp: ip,
-    createdAt: dateTime
-  }
-
-  const getDetails = {
-    id: uuid,
-    user: username
+    return date
   }
 
   const subscription = API.graphql(graphqlOperation(subscriptions.onUpdateDigioDemo)).subscribe({
@@ -87,6 +68,12 @@ function App() {
   });
 
   const updateTransaction = async () => {
+    const updateDetails = { 
+      id: uuid, 
+      user: username,
+      status: status
+    }
+
     await API.graphql(graphqlOperation(mutations.updateDigioDemo, { input: updateDetails }))
       .then((data) => {
         console.log('updated: ', data)
@@ -96,10 +83,18 @@ function App() {
   }
 
   const createTransaction = async () => {
-    getDateTime();
+    const createDetails = {
+      id: uuid,
+      status: status,
+      user: username,
+      originIP: ip,
+      createdAt: getDateTime()
+    }
+
     await API.graphql(graphqlOperation(mutations.createDigioDemo, { input: createDetails }))
       .then((data) => {
         console.log('created: ', data)
+        setTransactions([...transactions, data.data.createDigioDemo])
       });
   }
 
@@ -109,6 +104,11 @@ function App() {
   }
 
   const getTransactions = async () => {
+    const getDetails = {
+      id: uuid,
+      user: username
+    }
+    
     await API.graphql(graphqlOperation(queries.getDigioDemo, {input: getDetails }));
   }
 
@@ -117,17 +117,18 @@ function App() {
       <header className="App-header">
         <div className="content">
           <div className="left">
-            <label>Unique ID:</label>
-            <input type="text" onChange={(e) => setUuid(e.target.value)} />
-            <button onClick={() => setUuid(uuidv4())}>Generate UUID</button>
+            <label>Type unique ID:</label>
+            <input type="text" value={uuid} onChange={(e) => setUuid(e.target.value)} />
+            <label>or</label>
+            <button onClick={() => setUuid(uuidv4().replace("-", ""))}>Generate UUID</button>
           </div>
           <div className="left">
             <label>Username: </label>
-            <input type="text" onChange={(e) => setUsername(e.target.value)} label="setUsername" />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} label="setUsername" />
           </div>
           <div className="left">
             <label>Status:</label>
-            <input type="text" onChange={(e) => setStatus(e.target.value)} label="setStatus" />
+            <input type="text" value={status} onChange={(e) => setStatus(e.target.value)} label="setStatus" />
           </div>
           <div className="right">
             <label>UUID: {uuid}</label>
@@ -136,39 +137,41 @@ function App() {
           </div>
         </div>
         <div className='content'>
-          <button onClick={createTransaction}>
-            Click me to CREATE a transaction
-          </button>
-          <button onClick={updateTransaction}>
-            Click me to UPDATE the transaction
-          </button>
-          <button onClick={listTransactions}>
-            Click me to LIST all transactions
-          </button>
-        </div>
-        <div>
-          <table>
-            <tr>
-              <th>Item ID</th>
-              <th>Username</th>
-              <th>Status</th>
-              <th>Origin IP</th>
-              <th>createdAt</th>
-            </tr>
-            {
-              transactions.map((item, id) => {
-                return (
-                  <tr key={id}>
-                    <td>{item.id}</td>
-                    <td>{item.user}</td>
-                    <td>{item.status}</td>
-                    <td>{item.originIp}</td>
-                    <td>{item.createdAt}</td>
-                  </tr>
-                )      
-              })
-            }
-          </table>
+          <div>
+            <button onClick={createTransaction}>
+              Click me to CREATE a transaction
+            </button>
+            <button onClick={updateTransaction}>
+              Click me to UPDATE the transaction
+            </button>
+            <button onClick={listTransactions}>
+              Click me to LIST all transactions
+            </button>
+          </div>
+          <div>
+            <table>
+              <tr>
+                <th>Item ID</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>Origin IP</th>
+                <th>createdAt</th>
+              </tr>
+              {
+                transactions.map((item, id) => {
+                  return (
+                    <tr key={id}>
+                      <td>{item.id}</td>
+                      <td>{item.user}</td>
+                      <td>{item.status}</td>
+                      <td>{item.originIP}</td>
+                      <td>{item.createdAt}</td>
+                    </tr>
+                  )      
+                })
+              }
+            </table>
+          </div>
         </div>
       </header>
     </div>

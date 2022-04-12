@@ -42,7 +42,8 @@ tr {
 }
 
 th, td {
-  padding: 15px; 
+  padding: 15px;
+  text-align: left;
 }
 
 tr:hover {
