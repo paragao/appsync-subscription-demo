@@ -1,6 +1,6 @@
 {
   "api": {
-    "demoapp": {
+    "appsyncrealtimedemo": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
