@@ -38,11 +38,12 @@ The other packages will be installed during the build phase of this project.
 
 AWS Amplify helps us setup this solution easily. All you have to do is: 
 
-1. Clone this repo.
-2. Go to the `demo-app` directory
-3. Run `npm install`
-4. Run `amplify init` in order to configure AWS Amplify with your credentials.
-5. 
+1. Clone this repo and change into the directory.
+2. Run `amplify init` and name the environment in order to configure AWS Amplify with your credentials. After naming the project it will deploy the project to the cloud.
+3. Run `npm install`. 
+
+You are ready to test the application (see next section).
+
 
 ## How to test the solution
 In order to test the AWS AppSync subscriptions you should
