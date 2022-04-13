@@ -22,28 +22,30 @@ function App() {
 
   }, []);
 
+  const updateValue = (value) => {
+    //update the array with the new values
+    const newTransaction = value.data.onUpdateTransaction
+    //copy the state array into a new one 
+    const newTransactions = transactions.slice();
+    //find the index where the item is located 
+    const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransaction.id)
+    
+    if (index !== -1) {
+      //update the value and the state array
+      newTransactions[index].status = newTransaction.status
+      setTransactions(newTransactions)
+    } else {
+      console.error('couldn\'t find item in the array', index)
+    }
+  }
+  
   const subscription = () => {
     const sub = API.graphql(graphqlOperation(subscriptions.onUpdateTransaction)).subscribe({
       next: ({ provider, value }) => {
-        //update the array with the new values
-        const newTransaction = value.data.onUpdateTransaction
-
-        //copy the state array - transactions
-        const newTransactions = transactions.slice();
-
-        //find the index where the item is located 
-        const index = newTransactions.findIndex(el => el.id === uuid)
-        
-        if (index !== -1) {
-          //update the value
-          newTransactions[index].status = newTransaction.status
-          
-          //finally update the state with the new information
-          setTransactions(newTransactions)
-        } else {
-          console.error('couldn\'t find item in the array', index)
-        }
-        console.log('subs: ', sub)
+        console.log('subscription data: ', value.data)
+        console.log('subscription provider: ', provider)
+        updateValue(value)
+        console.log('subscription function: ', sub)
       },
       error: error => console.warn('subs error: ', error)
     })
@@ -54,27 +56,10 @@ function App() {
   const subscriptionId = () => {
     const sub = API.graphql(graphqlOperation(subscriptions.onUpdateSpecificTransaction, { id: uuid })).subscribe({
       next: ({ provider, value }) => {
-        //update the array with the new values
-        console.log('data: ', value.data)
-        console.log('provider: ', provider)
-        const newTransaction = value.data.onUpdateSpecificTransaction
-
-        //copy the state array - transactions
-        const newTransactions = transactions.slice();
-
-        //find the index where the item is located 
-        const index = newTransactions.findIndex(el => el.id === value.data.onUpdateSpecificTransaction.id)
-        
-        if (index !== -1) {
-          //update the value
-          newTransactions[index].status = newTransaction.status
-          
-          //finally update the state with the new information
-          setTransactions(newTransactions)
-        } else {
-          console.error('couldn\'t find item in the array', index)
-        }
-
+        console.log('subscription data: ', value.data)
+        console.log('subscription provider: ', provider)
+        updateValue(value)
+        console.log('subscription function: ', sub)        
       },
       error: error => console.warn('subs error: ', error)
     })
@@ -85,30 +70,15 @@ function App() {
   const subscriptionUser = () => {
     const sub = API.graphql(graphqlOperation(subscriptions.onUpdateTransactionByUser, { user: username })).subscribe({
       next: ({ provider, value }) => {
-        //update the array with the new values
-        const newTransaction = value.data.onUpdateTransactionByUser
-
-        //copy the state array - transactions
-        const newTransactions = transactions.slice();
-
-        //find the index where the item is located 
-        const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransactionByUser.id)
-        
-        if (index !== -1) {
-          //update the value
-          newTransactions[index].status = newTransaction.status
-          
-          //finally update the state with the new information
-          setTransactions(newTransactions)
-        } else {
-          console.error('couldn\'t find item in the array', index)
-        }
-
+        console.log('subscription data: ', value.data)
+        console.log('subscription provider: ', provider)
+        updateValue(value)
+        console.log('subscription function: ', sub) 
       },
       error: error => console.warn('subs error: ', error)
     })
     setObservers(sub)
-    console.log('Subscription on SPECIFIC USED started')
+    console.log('Subscription on SPECIFIC USER started')
   }
 
   const stopSubscription = () => {
@@ -131,7 +101,7 @@ function App() {
 
   const createTransaction = async () => {
     const createDetails = {
-      id: uuidv4(),
+      id: uuid || uuidv4(),
       status: status || 'NEW',
       user: username || faker.internet.userName(),
       originIP: faker.internet.ipv4()
@@ -145,7 +115,6 @@ function App() {
   }
 
   const listTransactions = async () => {
-    //TODO: sort by updatedAt
     const data = await API.graphql(graphqlOperation(queries.listTransactions));
     setTransactions(data.data.listTransactions.items)
   }
@@ -166,19 +135,19 @@ function App() {
       <div className='row justify-content-center'>
         <div className='col-xs-6 col-md-4 card border-light py-4'>
           <div className='btn-group px-4'>
-            <button className='btn btn-outline-warning me-2' onClick={subscription}>Start SUBSCRIPTION on all items</button>
-            <button className='btn btn-outline-warning me-2' onClick={subscriptionId}>Start SUBSCRIPTION on specific id/user</button>
-            <button className='btn btn-outline-warning me-2' onClick={subscriptionUser}>Start SUBSCRIPTION on all items for specific user</button>
+            <button className='btn btn-outline-dark me-2' onClick={subscription}>Start SUBSCRIPTION on all items</button>
+            <button className='btn btn-outline-dark me-2' onClick={subscriptionId}>Start SUBSCRIPTION on specific ID</button>
+            <button className='btn btn-outline-dark me-2' onClick={subscriptionUser}>Start SUBSCRIPTION on all items for specific USER</button>
           </div>
           <div className='btn-group p-4'>
-            <button className='btn btn-outline-warning me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on all items</button>
-            <button className='btn btn-outline-warning me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on specific id/user</button>
-            <button className='btn btn-outline-warning me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on all items for specific user</button>
+            <button className='btn btn-outline-dark me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on all items</button>
+            <button className='btn btn-outline-dark me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on specific ID</button>
+            <button className='btn btn-outline-dark me-2' onClick={stopSubscription}>Stop SUBSCRIPTION on all items for specific USER</button>
           </div>
           <div className='btn-group'>
             <button className='btn btn-outline-primary me-2' onClick={createTransaction}>CREATE a transaction</button>
             <button className='btn btn-outline-success me-2' onClick={updateTransaction}>UPDATE the transaction</button>
-            <button className='btn btn-outline-dark me-2' onClick={listTransactions}>LIST all transactions</button>
+            <button className='btn btn-outline-danger me-2' onClick={listTransactions}>LIST all transactions</button>
             <button className='btn btn-outline-secondary me-2' onClick={getTransaction}>GET a specific transaction by ID / USER</button>
           </div>
         </div>
