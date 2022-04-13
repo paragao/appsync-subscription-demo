@@ -39,21 +39,21 @@ The other packages will be installed during the build phase of this project.
 AWS Amplify helps us setup this solution easily. All you have to do is: 
 
 1. Clone this repo and change into the directory.
-2. Run `amplify init` and name the environment in order to configure AWS Amplify with your credentials. After naming the project it will deploy the project to the cloud.
-3. Run `npm install`. 
+2. Run `amplify init`. Chose the name for the environment (ex: dev) and configure the AWS profile (safer than using credentials).
+3. Run `amplify push` to deploy the resources to your AWS Account.
+4. Run `npm install`. 
 
 You are ready to test the application (see next section).
 
 
 ## How to test the solution
 In order to test the AWS AppSync subscriptions you should
-1. Change to the `demo-app` directory.
-2. Run `npm start`. The frontend will open in a new browser window.
-3. If this is the first time running it, click on `CREATE a transaction` to populate the database. The newly created items will be shown on the table. 
-4. Now copy the ItemID and Username of a specific item and paste on the respective form fields. Type a new Status on the form field and click `UPDATE the transaction`. You will see that nothing changes on the table since we are not subscribing to anything yet. If you click `LIST all transactions` you will see that the item has been updated.
-5. Now click on `Start SUBSCRIPTION on all items` and repeat the procedure on step 4 with a different status message. You will see that the table will change automatically. You can try a few more times before clicking `Stop SUBSCRIPTION on all items`. Make sure you stop subscribing before moving to the next step.
-6. Now copy and paste an Item ID on the form and click on `Start SUBSCRIPTION on specific ID`. Copy and paste the respective username on the form as well and type a new status message. You will see that the table updates because you are subscribed to that specific Item ID. If you try update another Item ID it will actually update but it will not show on the table because you are not subscribed to all items. If you hit `LIST all transactions` then you will that the other item has been updated (that's because it is getting the new values directly using a SCAN on the database). Before moving to the next step make sure you have clicked on the `Stop SUBSCRIPTION on specific ID`.
-7. Now copy and paste a Username on the form and click on `Start SUBSCRIPITION on specific USER`. In order to create more transacations for the same username, type a specific username on the form and click `CREATE a transaction`. Additional items with the same username will be created. Now, copy and paste the respective Item ID and type a new Status message and click on `UPDATE the transacation`. You will see that the item will be changed. Try with another Item ID for the same username. It will also be updated because your subscribing to all updates on a speficic username. Make sure you click on `Stop SUBSCRIPTION on a specific user` before moving forward.
+1. Run `npm start`. The frontend will open in a new browser window.
+2. If this is the first time running it, click on `CREATE a transaction` to populate the database. The newly created items will be shown on the table. 
+3. Now copy the ItemID and Username of a specific item and paste on the respective form fields. Type a new Status on the form field and click `UPDATE the transaction`. You will see that nothing changes on the table since we are not subscribing to anything yet. If you click `LIST all transactions` you will see that the item has been updated.
+4. Now click on `Start SUBSCRIPTION on all items` and repeat the procedure on step 4 with a different status message. You will see that the table will change automatically. You can try a few more times before clicking `Stop SUBSCRIPTION on all items`. Make sure you stop subscribing before moving to the next step.
+5. Now copy and paste an Item ID on the form and click on `Start SUBSCRIPTION on specific ID`. Copy and paste the respective username on the form as well and type a new status message. You will see that the table updates because you are subscribed to that specific Item ID. If you try update another Item ID it will actually update but it will not show on the table because you are not subscribed to all items. If you hit `LIST all transactions` then you will that the other item has been updated (that's because it is getting the new values directly using a SCAN on the database). Before moving to the next step make sure you have clicked on the `Stop SUBSCRIPTION on specific ID`.
+6. Now copy and paste a Username on the form and click on `Start SUBSCRIPITION on specific USER`. In order to create more transacations for the same username, type a specific username on the form and click `CREATE a transaction`. Additional items with the same username will be created. Now, copy and paste the respective Item ID and type a new Status message and click on `UPDATE the transacation`. You will see that the item will be changed. Try with another Item ID for the same username. It will also be updated because your subscribing to all updates on a speficic username. Make sure you click on `Stop SUBSCRIPTION on a specific user` before moving forward.
 
 
 
