@@ -44,3 +44,5 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 team-provider-info.json
+.vscode
+.graphqlconfig.yml
