@@ -2,9 +2,9 @@
 
 This project helps developers understand how powerful GraphQL subscriptions can be. 
 
-I have used ReactJS to create a simple frontend that interacts with a GraphQL API. The backend consists of AWS AppSync and Amazon DynamoDB. In order to make the whole process of developing simple, developer-friendly, I have used AWS Amplify. 
+I have used ReactJS to create a simple frontend that interacts with a GraphQL API. The backend consists of [AWS AppSync](https://aws.amazon.com/appsync/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/). In order to make the whole process of developing the app simple, developer-friendly, I have used AWS Amplify. 
 
-The project deploys both the backend and frontend using AWS Amplify.
+The project deploys both the backend and frontend using [AWS Amplify](https://aws.amazon.com/amplify/).
 
 ## Overview
 
@@ -12,9 +12,9 @@ The backend was designed for a simple use case: be able to create a transaction 
 
 On this example I am using a generated API Key but AWS AppSync allows you to integrate with Amazon Cognito for a true OAuth2/OIDC user authentication. You can also use AWS Web Application Firewall (WAF) in order to add an extra layer of security. In order to focus on the usability of Subscriptions I will not implement neither.
 
-AWS Amplify helps setting up the required libraries and security protocols for calling AWS Services. By leveraging AWS Amplify developers do not need to have advanced skills on AWS Services and can use code to create the backend resources. The GraphQL API, subscriptions, and the Amazon DynamoDB database are all described on the `schema.graphql` file, making it easy to design a data-driven architecture.
+AWS Amplify helps setting up the required libraries and security protocols for calling AWS Services. By leveraging AWS Amplify developers do not need to have advanced skills on AWS Services and can use code to create the backend resources. The GraphQL API, subscriptions, and the Amazon DynamoDB database are all described on the `schema.graphql` file, making it easy to design a data-driven architecture. To learn more about AWS Amplify and how it can create not only the GraphQL but also Resolvers and Data Sources automatically, check the documentation about [Data Modeling](https://docs.amplify.aws/cli/graphql/data-modeling/).
 
-In order to create fake data I am using [Faker.JS]().
+In order to create fake data I am using [Faker-JS](https://github.com/faker-js/faker).
 
 
 ## Technical Architecture 
