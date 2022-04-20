@@ -55,6 +55,10 @@ In order to test the AWS AppSync subscriptions you should
 5. Now copy and paste an Item ID on the form and click on `Start SUBSCRIPTION on specific ID`. Copy and paste the respective username on the form as well and type a new status message. You will see that the table updates because you are subscribed to that specific Item ID. If you try update another Item ID it will actually update but it will not show on the table because you are not subscribed to all items. If you hit `LIST all transactions` then you will that the other item has been updated (that's because it is getting the new values directly using a SCAN on the database). Before moving to the next step make sure you have clicked on the `Stop SUBSCRIPTION on specific ID`.
 6. Now copy and paste a Username on the form and click on `Start SUBSCRIPITION on specific USER`. In order to create more transacations for the same username, type a specific username on the form and click `CREATE a transaction`. Additional items with the same username will be created. Now, copy and paste the respective Item ID and type a new Status message and click on `UPDATE the transacation`. You will see that the item will be changed. Try with another Item ID for the same username. It will also be updated because your subscribing to all updates on a speficic username. Make sure you click on `Stop SUBSCRIPTION on a specific user` before moving forward.
 
+# Clean-up
 
+In order to delete this project from your account you have to run `amplify delete` from the root of the project diretory. 
+
+After the resources are deleted from your account, you can remove the project diretory (if desired).
 
 

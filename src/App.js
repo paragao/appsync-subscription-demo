@@ -23,20 +23,42 @@ function App() {
   }, []);
 
   const updateValue = (value) => {
-    //update the array with the new values
-    const newTransaction = value.data.onUpdateTransaction
-    //copy the state array into a new one 
-    const newTransactions = transactions.slice();
-    //find the index where the item is located 
-    const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransaction.id)
-    
-    if (index !== -1) {
-      //update the value and the state array
-      newTransactions[index].status = newTransaction.status
-      setTransactions(newTransactions)
-    } else {
-      console.error('couldn\'t find item in the array', index)
+
+    if (value.data.onUpdateSpecificTransaction) {
+      const newTransaction = value.data.onUpdateSpecificTransaction
+      const newTransactions = transactions.slice();
+      const index = newTransactions.findIndex(el => el.id === value.data.onUpdateSpecificTransaction.id)
+      
+      if (index !== -1) {
+        newTransactions[index].status = newTransaction.status
+        setTransactions(newTransactions)
+      } else {
+        console.error('couldn\'t find item in the array', index)
+      }
+    } else if (value.data.onUpdateTransactionByUser) {
+      const newTransaction = value.data.onUpdateTransactionByUser
+      const newTransactions = transactions.slice();
+      const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransactionByUser.id)
+      
+      if (index !== -1) {
+        newTransactions[index].status = newTransaction.status
+        setTransactions(newTransactions)
+      } else {
+        console.error('couldn\'t find item in the array', index)
+      }
+    } else { 
+      const newTransaction = value.data.onUpdateTransaction
+      const newTransactions = transactions.slice();
+      const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransaction.id)
+      
+      if (index !== -1) {
+        newTransactions[index].status = newTransaction.status
+        setTransactions(newTransactions)
+      } else {
+        console.error('couldn\'t find item in the array', index)
+      }
     }
+    
   }
   
   const subscription = () => {
