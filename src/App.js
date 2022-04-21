@@ -12,18 +12,19 @@ Amplify.configure(awsconfig)
 
 function App() {
 
+  // the form variables
   const [username, setUsername] = useState('');
   const [uuid, setUuid] = useState('');
-  const [status, setStatus] = useState('');
-  const [transactions, setTransactions] = useState([]);
-  const [observers, setObservers] = useState({});
+  const [status, setStatus] = useState(''); 
+  
+  const [transactions, setTransactions] = useState([]); // used to hold the transcation data and 
+  const [observers, setObservers] = useState({}); //used to hold the subscription promise and stop subscribing
 
   useEffect(() => {
-
+    //placeholder, not used right now
   }, []);
 
   const updateValue = (value) => {
-
     if (value.data.onUpdateSpecificTransaction) {
       const newTransaction = value.data.onUpdateSpecificTransaction
       const newTransactions = transactions.slice();
@@ -32,8 +33,9 @@ function App() {
       if (index !== -1) {
         newTransactions[index].status = newTransaction.status
         setTransactions(newTransactions)
+        console.log('Item already existed, status updated')
       } else {
-        console.error('couldn\'t find item in the array', index)
+        console.error('The item ID does not exist, update failed', index)
       }
     } else if (value.data.onUpdateTransactionByUser) {
       const newTransaction = value.data.onUpdateTransactionByUser
@@ -43,8 +45,10 @@ function App() {
       if (index !== -1) {
         newTransactions[index].status = newTransaction.status
         setTransactions(newTransactions)
+        console.log('Item already existed, status updated')
       } else {
-        console.error('couldn\'t find item in the array', index)
+        setTransactions([... transactions, newTransaction]) 
+        console.error('New item identified, adding to the table...', newTransaction)
       }
     } else { 
       const newTransaction = value.data.onUpdateTransaction
@@ -55,10 +59,9 @@ function App() {
         newTransactions[index].status = newTransaction.status
         setTransactions(newTransactions)
       } else {
-        console.error('couldn\'t find item in the array', index)
+        console.error('Item does not exist, update failed', index)
       }
     }
-    
   }
   
   const subscription = () => {
@@ -86,7 +89,7 @@ function App() {
       error: error => console.warn('subs error: ', error)
     })
     setObservers(sub)
-    console.log('Subscription on SPECIFIC ID started')
+    console.log(`Subscription on ID ${uuid}} started`)
   }
 
   const subscriptionUser = () => {
@@ -100,7 +103,7 @@ function App() {
       error: error => console.warn('subs error: ', error)
     })
     setObservers(sub)
-    console.log('Subscription on SPECIFIC USER started')
+    console.log(`Subscription on USER ${username} started`)
   }
 
   const stopSubscription = () => {
@@ -132,7 +135,7 @@ function App() {
     await API.graphql(graphqlOperation(mutations.createTransaction, { input: createDetails }))
       .then((data) => {
         console.log('created item: ', data)
-        setTransactions([...transactions, data.data.createTransaction])
+        //setTransactions([...transactions, data.data.createTransaction])
       });
   }
 
