@@ -17,8 +17,8 @@ function App() {
   const [uuid, setUuid] = useState('');
   const [status, setStatus] = useState(''); 
   
-  const [transactions, setTransactions] = useState([]); // used to hold the transcation data and 
-  const [observers, setObservers] = useState({}); //used to hold the subscription promise and stop subscribing
+  const [transactions, setTransactions] = useState([]); // used to hold the transcation data 
+  const [observers, setObservers] = useState({}); //used to hold the subscription promise and stop subscribing via the .unsubscribe() function
 
   useEffect(() => {
     //placeholder, not used right now
