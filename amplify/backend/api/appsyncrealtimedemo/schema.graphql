@@ -9,6 +9,6 @@ type Transaction @model @auth(rules: [{ allow: public }]) {
 }
 
 type Subscription {
-  onUpdateSpecificTransaction(id: ID!): Transaction @aws_subscribe(mutations: ["updateTransaction"])
+  onUpdateSpecificTransaction(id: ID!): Transaction @aws_subscribe(mutations: ["updateTransaction", "createTransaction"])
   onUpdateTransactionByUser(user: String!): Transaction @aws_subscribe(mutations: ["createTransaction", "updateTransaction"])
 }
