@@ -16,6 +16,7 @@ function App() {
   const [username, setUsername] = useState('');
   const [uuid, setUuid] = useState('');
   const [status, setStatus] = useState(''); 
+  const [toast, setToast] = useState({show: false, message: ''});
   
   const [transactions, setTransactions] = useState([]); // used to hold the transcation data 
   const [observers, setObservers] = useState({}); //used to hold the subscription promise and stop subscribing via the .unsubscribe() function
@@ -48,7 +49,7 @@ function App() {
         console.log('Item already existed, status updated')
       } else {
         setTransactions([... transactions, newTransaction]) 
-        console.error('New item identified, adding to the table...', newTransaction)
+        console.warn('New item identified, adding to the table...', newTransaction)
       }
     } else { 
       const newTransaction = value.data.onUpdateTransaction
@@ -74,8 +75,8 @@ function App() {
       },
       error: error => console.warn('subs error: ', error)
     })
-  setObservers(sub)
-  console.log('Subscription on ALL items started')
+    setObservers(sub)
+    setToast({show: true, message: "Started Subscription on ALL items"})
   }
 
   const subscriptionId = () => {
@@ -89,7 +90,7 @@ function App() {
       error: error => console.warn('subs error: ', error)
     })
     setObservers(sub)
-    console.log(`Subscription on ID ${uuid}} started`)
+    setToast({show: true, message: `Subscription on ID ${uuid} started`})
   }
 
   const subscriptionUser = () => {
@@ -103,12 +104,12 @@ function App() {
       error: error => console.warn('subs error: ', error)
     })
     setObservers(sub)
-    console.log(`Subscription on USER ${username} started`)
+    setToast({show: true, message: `Subscription on USER ${username} started`})
   }
 
   const stopSubscription = () => {
     observers.unsubscribe();
-    console.log('Stopped subscribing')
+    setToast({show: true, message: "Stopped subscribing"})
   }
 
   const updateTransaction = async () => {
@@ -135,7 +136,10 @@ function App() {
     await API.graphql(graphqlOperation(mutations.createTransaction, { input: createDetails }))
       .then((data) => {
         console.log('created item: ', data)
-        //setTransactions([...transactions, data.data.createTransaction])
+        console.log(observers._state)
+        if (observers._state === 'closed' || observers._state === undefined) {
+          setTransactions([...transactions, data.data.createTransaction])
+        }
       });
   }
 
@@ -149,10 +153,23 @@ function App() {
     setTransactions([data.data.getTransaction])
   }
 
+  const handleToast = () => {
+    setToast({show: false, message: ''})
+  }
+
   return (
     <div className='container-fluid py-2'>
       <div className='row py-2 justify-content-center'>
-        <div className='col-md-4'></div>
+        <div className='col-md-4'>
+          <div class={toast.show ? 'toast show bg-success text-white' : 'toast hidden'}>
+            <div class="d-flex">
+              <div class='toast-body'>
+                {toast.show ? toast.message : ''}
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" onClick={handleToast} />
+            </div>
+          </div>
+        </div>
         <div className='col-xs-6 col-md-8 card'>
           <label className='card-title'>Data to be used for an update (new items will be auto filled)</label>
         </div>
