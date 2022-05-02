@@ -12,7 +12,7 @@ Amplify.configure(awsconfig)
 
 function App() {
 
-  // the form variables
+  // form variables
   const [username, setUsername] = useState('');
   const [uuid, setUuid] = useState('');
   const [status, setStatus] = useState(''); 
