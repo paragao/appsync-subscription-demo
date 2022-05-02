@@ -161,12 +161,12 @@ function App() {
     <div className='container-fluid py-2'>
       <div className='row py-2 justify-content-center'>
         <div className='col-md-4'>
-          <div class={toast.show ? 'toast show bg-success text-white' : 'toast hidden'}>
-            <div class="d-flex">
-              <div class='toast-body'>
+          <div className={toast.show ? 'toast show bg-success text-white' : 'toast hidden'}>
+            <div className="d-flex">
+              <div className='toast-body'>
                 {toast.show ? toast.message : ''}
               </div>
-              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" onClick={handleToast} />
+              <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" onClick={handleToast} />
             </div>
           </div>
         </div>
