@@ -48,7 +48,7 @@ function App() {
         setTransactions(newTransactions)
         console.log('Item already existed, status updated')
       } else {
-        setTransactions([... transactions, newTransaction]) 
+        setTransactions([...transactions, newTransaction]) 
         console.warn('New item identified, adding to the table...', newTransaction)
       }
     } else { 
@@ -121,7 +121,12 @@ function App() {
 
     await API.graphql(graphqlOperation(mutations.updateTransaction, { input: updateDetails }))
       .then((data) => {
-        console.log('updated item: ', data)
+        console.log('updated item: ', data);
+        setToast({show: true, level: 'bg-success', message: 'item updated successfully'})
+      })
+      .catch((err) => {
+        console.error('item update gone wrong', err);
+        setToast({show: true, level: 'bg-warning', message: 'error updating item'})
       });
   }
 
@@ -140,17 +145,36 @@ function App() {
         if (observers._state === 'closed' || observers._state === undefined) {
           setTransactions([...transactions, data.data.createTransaction])
         }
+        setToast({show: true, level: 'bg-success', message: 'item created successfully'})
+      })
+      .catch((err) => {
+        console.warn('create items error', err)
+        setToast({show: true, level: 'bg-warning', message: 'item creation failed'})
       });
   }
 
   const listTransactions = async () => {
-    const data = await API.graphql(graphqlOperation(queries.listTransactions));
-    setTransactions(data.data.listTransactions.items)
+    const data = await API.graphql(graphqlOperation(queries.listTransactions))
+      .then((response) => {
+        setTransactions(data.data.listTransactions.items);
+        setToast({show: true, level: 'bg-success', message: 'items listed successfully'})
+      })
+      .catch((err) => {
+        console.warn('list items error', err);
+        setToast({show: true, level: 'bg-warning', message: 'items listing failed'})
+      });
   }
 
   const getTransaction = async () => {
     const data = await API.graphql(graphqlOperation(queries.getTransaction, { id: uuid, user: username }))
-    setTransactions([data.data.getTransaction])
+      .then((response) => {
+        setTransactions([data.data.getTransaction]);
+        setToast({show: true, level: 'bg-success', message: 'got item successfully'})
+      })
+      .catch((err) => {
+        console.warn('get item error', err);
+        setToast({show: true, level: 'bg-warning', message: 'get item failed'})
+      })
   }
 
   const handleToast = () => {
@@ -161,7 +185,7 @@ function App() {
     <div className='container-fluid py-2'>
       <div className='row py-2 justify-content-center'>
         <div className='col-md-4'>
-          <div class={toast.show ? 'toast show bg-success text-white' : 'toast hidden'}>
+          <div class={toast.show ? `toast show ${toast.level} text-white` : 'toast hidden'}>
             <div class="d-flex">
               <div class='toast-body'>
                 {toast.show ? toast.message : ''}
