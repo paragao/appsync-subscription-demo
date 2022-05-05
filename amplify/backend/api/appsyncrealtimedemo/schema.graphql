@@ -4,8 +4,9 @@
 type Transaction @model @auth(rules: [{ allow: public }]) {
   id: ID! @primaryKey(sortKeyFields: ["user"])
   originIP: AWSIPAddress
-  status: String!
+  status: String! 
   user: String!
+  type: String! @index(name: "transactionsByStatus", queryField: "transactionsByStatus", sortKeyFields: ["status"])
 }
 
 type Subscription {

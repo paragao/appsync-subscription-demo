@@ -154,9 +154,9 @@ function App() {
   }
 
   const listTransactions = async () => {
-    const data = await API.graphql(graphqlOperation(queries.listTransactions))
+    await API.graphql(graphqlOperation(queries.listTransactions))
       .then((response) => {
-        setTransactions(data.data.listTransactions.items);
+        setTransactions(response.data.listTransactions.items);
         setToast({show: true, level: 'bg-success', message: 'items listed successfully'})
       })
       .catch((err) => {
@@ -166,9 +166,9 @@ function App() {
   }
 
   const getTransaction = async () => {
-    const data = await API.graphql(graphqlOperation(queries.getTransaction, { id: uuid, user: username }))
+    await API.graphql(graphqlOperation(queries.getTransaction, { id: uuid, user: username }))
       .then((response) => {
-        setTransactions([data.data.getTransaction]);
+        setTransactions([response.data.getTransaction]);
         setToast({show: true, level: 'bg-success', message: 'got item successfully'})
       })
       .catch((err) => {
@@ -185,9 +185,9 @@ function App() {
     <div className='container-fluid py-2'>
       <div className='row py-2 justify-content-center'>
         <div className='col-md-4'>
-          <div class={toast.show ? `toast show ${toast.level} text-white` : 'toast hidden'}>
-            <div class="d-flex">
-              <div class='toast-body'>
+          <div id="toastMessage" className={toast.show ? `toast show ${toast.level} text-white` : 'toast hidden'} role="alert" data-bs-autohide="true" data-bs-delay="1000">
+            <div className="d-flex">
+              <div className="toast-body">
                 {toast.show ? toast.message : ''}
               </div>
               <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" onClick={handleToast} />
