@@ -15,7 +15,7 @@ function App({ signOut, user }) {
   //info got from Amazon Cognito integration via Amplify Auth
   const username = user.attributes.email
 
-  const [uuid, setUuid] = useState(''); //TODO: can remove and let it be created automatically - recover from listTransactions and use in updateTransaction later
+  const [uuid, setUuid] = useState(''); //TODO: can remove and let it be created automatically - recover from getTransaction and use in updateTransaction later
   const [status, setStatus] = useState(''); 
   const [loadStatus, setLoadStatus] = useState('');
   const [receiver, setReceiver] = useState('');
@@ -26,11 +26,10 @@ function App({ signOut, user }) {
   const [accountDeleted, setAccountDeleted] = useState(false);
   const [balanceSubscription, setBalanceSubscription] = useState();
   const [transactionSubscription, setTransactionSubscription] = useState();
+  const [updateTransactionSubscription, setUpdateSubscription] = useState();
   const [tickPrice, setTickPrice] = useState([]);
   const [isChecked, setIsChecked] = useState({'AMZN': false, 'TSLA': false, 'APPL': false});
-  
-  const [transactions, setTransactions] = useState([]); // used to hold the transaction data 
-  const [observers, setObservers] = useState({}); //used to hold the subscription promise and stop subscribing via the .unsubscribe() function
+  const [transactions, setTransactions] = useState([]); 
 
   useEffect(() => {
     // on first render, get initial balance if account exists
@@ -46,6 +45,18 @@ function App({ signOut, user }) {
           console.log('error getting initial balance or account does not exist ', err)
         })
     
+    // on first render, get all transactions related to the actual user if they exist
+    const filterDetails = {
+      or: [
+        { sender: {eq: username} }, 
+        { receiver: {eq: username} }
+      ]
+    }
+    API.graphql(graphqlOperation(queries.listTransactions, {filter: filterDetails}))
+      .then((response) => {
+        setTransactions(response.data.listTransactions.items)
+      })
+
     //subscribe to account balance to show any update in realtime
     const balanceSubscription = API.graphql(graphqlOperation(subscriptions.onUpdateAccountBalance)).subscribe({
       next: ({ provider, value }) => { 
@@ -63,10 +74,19 @@ function App({ signOut, user }) {
 
     const updateTransactionSubscription = API.graphql(graphqlOperation(subscriptions.onUpdateTransaction)).subscribe({
       next: ({ provider, value }) => {
-
+        const newTransactions = transactions.slice();
+        const index = newTransactions.findIndex(el => el.id === value.data.onUpdateTransaction.id)
+        
+        if (index !== -1) {
+          newTransactions[index].status = value.data.onUpdateTransaction.status
+          setTransactions(newTransactions)
+        } else {
+          console.warn('no transactions found to be updated');
+        }
       },
       error: (error) => console.warn(error)
     })
+    setUpdateSubscription(updateTransactionSubscription);
     setTransactionSubscription(transactionSubscription);
     setBalanceSubscription(balanceSubscription);
   }, []);
@@ -139,15 +159,14 @@ function App({ signOut, user }) {
     const updateDetails = { 
       id: uuid, 
       sender: username,
-      receiver: receiver,
-      status: status,
-      type: 'PIX'
+      status: status
     }
 
     await API.graphql(graphqlOperation(mutations.updateTransaction, { input: updateDetails }))
-      .then((data) => {})
       .catch((err) => {
-        console.error('item update gone wrong', err);
+        if (err.errorType === "DynamoDB:ConditionalCheckFailedException") {
+          console.info('DynamoDB condition has not been met - validate that the transaction belongs to the user')
+        }
       });
     
     setLoadStatus('')
@@ -242,6 +261,7 @@ function App({ signOut, user }) {
   const handleSignOut = () => {
     balanceSubscription.unsubscribe();
     transactionSubscription.unsubscribe();
+    updateTransactionSubscription.unsubscribe();
     signOut();
   }
 
@@ -293,19 +313,20 @@ function App({ signOut, user }) {
   return (
     <Grid 
       templateColumns="1fr 1fr 1fr"
-      templateRows="1fr 3fr 1fr"
+      templateRows="1fr 1fr 1fr"
     >
       <Card 
         columnStart="1" 
         columnEnd="-1"
+        rowStart="1"
+        rowEnd="-11"
+        maxHeight="5rem"
         variation='outlined'
         backgroundColor="#FF9900"
       >
         <Flex
           direction="row"
           justifyContent="space-between"
-          alignItems="flex-start"
-          alignContent="flex-start"
           wrap="nowrap"
           gap="1rem"
         >
@@ -336,179 +357,14 @@ function App({ signOut, user }) {
         </Flex>
       </Card>
       <Card 
-        columnStart="1" 
-        columnEnd="3"
-        rowStart="2"
-        rowEnd="-1"
         backgroundColor="#232F3E"
+        columnStart="1"
+        columnEnd="3"
+        rowStart="1"
       >
         <Flex
-          direction="column"
-          justifyContent="space-between"
-          alignItems="strecth"
-          alignContent="flex-start"
-          wrap="nowrap"
-          gap="1rem"
+          justifyContent="center"
         >
-          <Card 
-            borderRadius={10} 
-            backgroundColor="#232F3E"
-          >
-            <Flex 
-              direction="row" 
-              justifyContent="space-around"
-            >
-              <View>
-                <Button
-                  isLoading={loadStatus === 'list' ? true : false}
-                  loadingText="listing..."
-                  onClick={listTransactions}
-                  variation='primary'
-                  marginBottom="1rem"
-                >
-                  List all Transactions
-                </Button>
-                <br />
-              </View>
-              <View>
-                <SelectField
-                  placeholder="New status"
-                  color="white"
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  {statusList.map((state) => (
-                    <option color="white" value={state}>{state}</option>
-                  ))}
-                </SelectField>
-                <TextField 
-                  placeholder="Transaction ID"
-                  color="white"
-                  onChange={(e) => setUuid(e.target.value)} 
-                  outerEndComponent={
-                    <Button
-                      isLoading={loadStatus === 'update' ? true : false}
-                      loadingText="updating..."
-                      onClick={updateTransaction}
-                      variation='primary'
-                    >
-                      Update
-                    </Button>
-                  } 
-                />
-              </View>
-              <View>
-                <TextField 
-                  placeholder="Transaction ID"
-                  color="white"
-                  onChange={(e) => setUuid(e.target.value)} 
-                  outerEndComponent={
-                    <Button
-                      isLoading={loadStatus === 'subscribe' ? true : false}
-                      loadingText="subscribing..."
-                      onClick={() => alert('to be implemented')}
-                      variation='primary'
-                    >
-                      Subscribe
-                    </Button>
-                  } 
-                />
-              </View>
-            </Flex>
-          </Card>
-          <Card borderRadius={10} backgroundColor="#232F3E">
-            <Table
-              highlightOnHover={false}
-              variation="striped"
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell as="th" color="white">Transaction Id</TableCell>
-                  {
-                  //<TableCell as="th" color="white">Sender</TableCell>
-                  //<TableCell as="th" color="white">Receiver</TableCell>
-                  }
-                  <TableCell as="th" color="white">Type</TableCell>
-                  <TableCell as="th" color="white">Amount</TableCell>
-                  <TableCell as="th" color="white">Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {transactions.map((transaction, index) => (
-                  <TableRow>
-                    <TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.id}</TableCell>
-                    {
-                    //<TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.sender}</TableCell>
-                    //<TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.receiver}</TableCell>
-                    }
-                    <TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.type}</TableCell>
-                    <TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.amount}</TableCell>
-                    <TableCell color={index % 2 === 0 ? 'black' : 'orange'}>{transaction.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </Flex>
-      </Card>
-      <Card 
-        columnStart="3" 
-        columnEnd="3"
-        rowStart="2"
-        rowEnd="-1"
-        backgroundColor="#232F3E"
-      >
-        <Flex
-          direction="column"
-          justifyContent="space-between"
-          alignItems="stretch"
-          alignContent="flex-start"
-          wrap="nowrap"
-          gap="1rem"
-        >
-          <Card>
-            <View>
-              <Text fontWeight={800}>Financial Statement</Text>
-              <Divider />
-              <Text>Account Id: {account} </Text>
-              <Text marginBottom="2rem">Account balance: {balance} </Text>
-              <Text fontWeight={800}>Transaction Summary</Text>
-              <Divider />
-              <Text>Sender: {username} </Text>
-              <Text>Receiver: {receiver} </Text>
-              <Text >Cash to send (US$):  {cash} </Text>
-            </View>
-          </Card>
-          <Card>
-            <View>
-              <TextField 
-                label="Cash value (US$)"
-                placeholder="insert amount to be transfered"
-                onChange={(e) => setCash(e.target.value)}
-                marginBottom="1rem"
-              />
-              <SelectField
-                label="To whom?"
-                onChange={(e) => setReceiver(e.target.value)}
-                marginBottom="1rem"
-              >
-                <option value="" default></option>
-                {usernameReceivers.map((receiver) => (
-                  <option value={receiver}>{receiver}</option>
-                ))}
-              </SelectField>
-              <Button 
-                onClick={createTransaction}
-                isLoading={loadStatus === 'create' ? true : false}
-                loadingText='creating...'
-              >
-                Transfer money
-              </Button>
-            </View>
-          </Card>
-        </Flex>
-      </Card>
-      <Card>
-        <Flex>
           <Card
             variation="elevated"
             backgroundColor="orange"
@@ -574,6 +430,140 @@ function App({ signOut, user }) {
             > 
               <Text>Price: {tick3Price}</Text>
             </Flex>
+          </Card>
+        </Flex>
+        <Flex
+          direction="column"
+          justifyContent="flex-start"
+          alignContent="flex-start"
+          wrap="nowrap"
+          gap="1rem"
+        >
+          <Card 
+            backgroundColor="#232F3E"
+          >
+            <Flex 
+              direction="row" 
+              justifyContent="center"
+            >
+              <View>
+                <SelectField
+                  placeholder="New status"
+                  color="white"
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  {statusList.map((state) => (
+                    <option color="white" value={state}>{state}</option>
+                  ))}
+                </SelectField>
+                <TextField 
+                  placeholder="Transaction ID"
+                  color="white"
+                  onChange={(e) => setUuid(e.target.value)} 
+                  outerEndComponent={
+                    <Button
+                      isLoading={loadStatus === 'update' ? true : false}
+                      loadingText="updating..."
+                      onClick={updateTransaction}
+                      variation='primary'
+                    >
+                      Update
+                    </Button>
+                  } 
+                />
+              </View>
+            </Flex>
+          </Card>
+
+            <Table
+              backgroundColor="#232F3E"
+              highlightOnHover={true}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell as="th" color="white">Transaction Id</TableCell>
+                  <TableCell as="th" color="white">Type</TableCell>
+                  <TableCell as="th" color="white">Amount</TableCell>
+                  <TableCell as="th" color="white">Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {transactions.map((transaction, index) => (
+                  <TableRow>
+                    <TableCell color='orange'>{transaction.id}</TableCell>
+                    <TableCell color='orange'>{transaction.type}</TableCell>
+                    <TableCell color='orange'>{transaction.amount}</TableCell>
+                    <TableCell color='orange'>{transaction.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+        </Flex>
+      </Card>
+      <Card 
+        columnStart="1" 
+        columnEnd="3"
+        rowStart="2"
+        rowEnd="-1"
+        backgroundColor="#232F3E"
+      >
+
+      </Card>
+      <Card 
+        columnStart="3" 
+        columnEnd="-1"
+        rowStart="1"
+        rowEnd="-1"
+        backgroundColor="#232F3E"
+      >
+        <Flex
+          direction="column"
+          justifyContent="space-between"
+          alignItems="stretch"
+          alignContent="flex-start"
+          wrap="nowrap"
+          gap="1rem"
+        >
+          <Card>
+            <View>
+              <Text fontWeight={800}>Financial Statement</Text>
+              <Divider />
+              <Text>Account Id: {account} </Text>
+              <Text marginBottom="2rem">Account balance: {balance} </Text>
+              <Text fontWeight={800}>Transaction Summary</Text>
+              <Divider />
+              <Text>Sender: {username} </Text>
+              <Text>Receiver: {receiver} </Text>
+              <Text >Cash to send (US$):  {cash} </Text>
+            </View>
+          </Card>
+          <Card>
+            <View>
+              <TextField 
+                label="Cash value (US$)"
+                placeholder="insert amount to be transfered"
+                onChange={(e) => setCash(e.target.value)}
+                marginBottom="1rem"
+              />
+              <SelectField
+                label="To whom?"
+                onChange={(e) => setReceiver(e.target.value)}
+                marginBottom="1rem"
+              >
+                <option value="" default></option>
+                {usernameReceivers.map((receiver) => (
+                  <option value={receiver}>{receiver}</option>
+                ))}
+              </SelectField>
+              <Button 
+                onClick={createTransaction}
+                isLoading={loadStatus === 'create' ? true : false}
+                loadingText='creating...'
+              >
+                Transfer money
+              </Button>
+            </View>
           </Card>
         </Flex>
       </Card>
