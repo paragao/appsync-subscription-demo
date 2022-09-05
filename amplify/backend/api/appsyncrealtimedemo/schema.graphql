@@ -1,19 +1,21 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 # input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+# id = uuid generated 
 type Transaction @model @auth(rules: [{ allow: public }]) {
   id: ID! @primaryKey(sortKeyFields: ["sender"])
   originIP: AWSIPAddress
   status: String! 
   sender: String!
   receiver: String! @index(name: "transactionByEmail", queryField: "transactionsByEmail", sortKeyFields: ["sender"])
-  accountId: [String]
-  amount: Float
+  accountId: [String] 
+  amount: Float 
   type: String! @index(name: "transactionsByStatus", queryField: "transactionsByStatus", sortKeyFields: ["status"])
 }
 
 type Subscription {
-  onUpdateSpecificTransaction(id: ID!): Transaction @aws_subscribe(mutations: ["updateTransaction", "createTransaction"])
+  onUpdateSpecificTransaction(id: ID!): Transaction @aws_subscribe(mutations: ["updateTransaction", "createTransaction"]) 
   onUpdateTransactionBySender(sender: String!): Transaction @aws_subscribe(mutations: ["createTransaction", "updateTransaction"])
   onUpdateTransactionByReceiver(receiver: String!): Transaction @aws_subscribe(mutations: ["createTransaction", "updateTransaction"])
 }
