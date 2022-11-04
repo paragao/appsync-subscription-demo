@@ -21,16 +21,16 @@ In order to create fake data I am using [Faker-JS](https://github.com/faker-js/f
 
 The following diagram shows a component overview of the solution: 
 
-[Image]()
+[Image](diagram.png)
 
 ## How to deploy the solution
 
 There are some pre-requisites for this solution to work:
 
 - an AWS Account
-- [AWS Amplify CLI]() installed
-- [AWS CLI]() installed
-- [AWS credentials]() configured
+- [AWS Amplify CLI](https://docs.amplify.aws/cli/) installed
+- [AWS CLI](https://docs.aws.amazon.com/cli/index.html) installed
+- [AWS credentials](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html) configured
 - NodeJS v16 or above
 - NPM v8 or above
 
@@ -41,6 +41,7 @@ AWS Amplify helps us setup this solution easily. All you have to do is:
 1. Clone this repo and change into the cloned directory;
 2. Run `amplify init`. Chose the name for the environment (ex: dev) and configure the AWS profile;
 3. Run `amplify push` to deploy the resources to your AWS Account;
+    - Accept all the default values. Make sure you answer `Yes` for the GraphQL questions;
 4. Run `npm install` and then `npm start` to install the required libraries and start the development server locally.
 
 You are ready to test the application (see next section).
