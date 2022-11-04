@@ -21,7 +21,7 @@ In order to create fake data I am using [Faker-JS](https://github.com/faker-js/f
 
 The following diagram shows a component overview of the solution: 
 
-[Image](diagram.png)
+![Image](./diagram.png)
 
 ## How to deploy the solution
 
